@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="230" viewBox="0 0 800 230">
+  <defs><linearGradient id="wg" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%"   style="stop-color:#c4b5ff;stop-opacity:0.7" />
+      <stop offset="30%"  style="stop-color:#9b7dff;stop-opacity:0.55" />
+      <stop offset="60%"  style="stop-color:#5F9EA0;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#D4AF37;stop-opacity:0.3" />
+    </linearGradient></defs>
+  <text fill="url(#wg)" font-family="monospace" font-size="14" xml:space="preserve">
+    <tspan x="-10" y="16">                                                                                                         .      ˚</tspan>
+    <tspan x="-10" y="33">                                                     ·         ˚    .</tspan>
+    <tspan x="-10" y="50">                 ·                 ˚</tspan>
+    <tspan x="-10" y="67">                           ·                                                                                              *    .   *</tspan>
+    <tspan x="-10" y="84">               ·         .                                  .                       ˚        ˚     ·</tspan>
+    <tspan x="-10" y="101">                                                  *       ·                      .                   ·          +            .</tspan>
+    <tspan x="-10" y="118">+   · + ·  ·   + ˚   *  *   +  ˚  ˚ * *   ·  +  *  .   *  +  *   .  ˚ . ˚  ˚  ˚   ·  · · + ·  +  .   .   . ˚  ·   ·  · +   ˚  *  · ˚ · .  .   ˚   + </tspan>
+    <tspan x="-10" y="135">*   +   .   ˚ * . +   ˚  ·  * ˚   ˚ ·   ·   · +  ·   ·   *  +  *  .  ·   . +   *  .  ·  +   +  ˚  +  . ˚   .  ˚ +  ˚  .   . ·   ˚   .  .   ·  + ˚  .</tspan>
+    <tspan x="-10" y="152">.   *   · * .  +  ·   · *  +   .  + · * ˚   +  . ˚  *  .   *  · * + ·  ·   ˚  ˚  ˚  *  ˚ . * ·   ˚  *   .  .  *   ˚  .  .   ˚   ·  ·  +   +   ˚  ˚ .</tspan>
+    <tspan x="-10" y="169">⁓⁓≈ ⁓∼≈⁓ ~⁓ ⁓ ~ ∿≈∼ ~ ∼∼~ ⁓∼∿ ⁓⁓ ∼ ≈ ⁓⁓ ~ ∿ ∼ ~∼ ∿ ∼ ~ ~ ∿∿ ∿ ≈ ≈∿ ~~∿ ∿≈ ~~∿ ~⁓ ∿ ∿ ⁓~ ≈ ~∼ ∿~ ∿⁓∼ ≈∼ ⁓ ⁓∿⁓∿ ~∼∼~ ⁓⁓∼ ~≈ ∼∼ ⁓≈∿∿≈ ⁓ ∿⁓ ∼⁓ ≈∿∿ ≈∿≈ ~</tspan>
+    <tspan x="-10" y="186">≈ ⁓ ⁓ ∼⁓ ⁓∼∿∿⁓ ~≈⁓ ≈~≈~~ ∿ ∼ ~ ⁓ ∼ ⁓ ~⁓∼ ∼⁓ ≈⁓⁓ ∼ ⁓ ∿~≈≈⁓~ ⁓≈ ≈∿ ∿ ∿∿⁓ ~∿≈⁓ ∼ ~ ∼∿ ∿≈∿∿≈∼~≈≈ ≈ ≈∿ ≈ ⁓⁓∿~~∼ ∼ ⁓⁓ ≈ ∿∿ ~ ∿ ≈⁓ ∼∼ ∿ ∼∿≈≈⁓≈ ~ ⁓∿ ∼ ∼ ∼~ </tspan>
+    <tspan x="-10" y="203">~∼≈ ~ ∿⁓≈ ∼ ≈~ ~≈⁓∼≈≈ ⁓ ∿ ≈~≈ ≈ ∼∼ ∼≈ ∿ ∿ ≈~ ∼≈≈≈∼∼ ~ ~∿⁓ ⁓∿ ∼~ ~∼~⁓ ∿∼≈ ∿ ≈ ≈ ∼∼∿∼ ⁓ ∼∼≈ ~~ ∼≈ ∿⁓⁓⁓ ∿~ ⁓ ~ ∼ ∿∼ ~~ ≈ ∿ ∿≈ ~ ⁓ ∿ ∿≈ ⁓ ~ ∼ ∼ ∿ ⁓ ⁓≈ ≈</tspan>
+  </text>
+</svg>
