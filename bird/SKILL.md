@@ -1,7 +1,7 @@
 ---
 name: bird
-version: "1.0.0"
-description: Twitter/X CLI skill. Use when the user shares an x.com or twitter.com URL, mentions a tweet/thread, asks about someone's Twitter/X posts, wants to search Twitter, check mentions, see timeline, read trending topics, or post/reply on X. Runs bird CLI directly — do not open a browser or use WebFetch for Twitter content.
+version: "1.0.1"
+description: "Twitter/X CLI skill. Triggers automatically when user shares an x.com or twitter.com URL. Also use when user mentions a tweet/thread, asks about Twitter posts, wants to search, check mentions, see timeline, post/reply on X. Runs bird CLI directly — no browser, no WebFetch."
 argument-hint: "[tweet-url-or-id] [action]"
 allowed-tools: Bash
 user-invocable: true
@@ -17,7 +17,7 @@ metadata:
 
 # Bird — Twitter/X CLI
 
-**Auth:** Safari cookies auto-detected (no flags needed)
+**Auth:** Safari cookies auto-detected (logged in as @ColdCooks)
 **Fallback:** `bird --chrome-profile "Default" <command>`
 **Binary:** `/opt/homebrew/bin/bird`
 
@@ -56,7 +56,7 @@ bird search "term" --all            # all results, paginated
 ```bash
 bird home -n 20                     # For You feed
 bird home --following -n 20         # Following (chronological)
-bird mentions -n 20                 # your mentions
+bird mentions -n 20                 # @ColdCooks mentions
 bird mentions -u @handle -n 20      # another user's mentions
 bird bookmarks -n 20
 bird likes -n 20

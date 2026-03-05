@@ -6,15 +6,16 @@
 
 <h1 align="center">bird-skill</h1>
 
-<p align="center">claude code skill for bird, the twitter/x cli.</p>
+<p align="center">claude code skill for bird, the twitter/x cli. originally by <a href="https://x.com/steipete">@steipete</a>.</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/skill-v1.0.0-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="version" />
+  <img src="https://img.shields.io/badge/skill-v1.0.1-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
+  <img src="https://img.shields.io/badge/bird-v0.8.0-D4AF37?style=flat-square&labelColor=1a1a2e" alt="bird version" />
   <img src="https://img.shields.io/badge/zayd.wtf-D4AF37?style=flat-square&labelColor=1a1a2e" alt="site" />
 </p>
 
 <p align="center">
-  <a href="#what-it-does">what it does</a> · <a href="#install">install</a> · <a href="#usage">usage</a>
+  <a href="#what-it-does">what it does</a> · <a href="#install">install</a> · <a href="#usage">usage</a> · <a href="#changelog">changelog</a>
 </p>
 
 <br>
@@ -29,9 +30,13 @@
 
 ## what it does
 
-bird is a fast cli for twitter/x. reads tweets, searches, posts, follows, checks your timeline. all from the terminal using your browser's saved cookies.
+[bird](https://github.com/steipete/bird) is a fast cli for twitter/x, built by [@steipete](https://x.com/steipete). reads tweets, searches, posts, follows, checks your timeline. all from the terminal using your browser's saved cookies — no api keys, no oauth dance.
 
-this is a claude code skill that wraps it. paste an x.com link into any conversation and your agent reads it directly. no browser tab, no webfetch, no auth setup.
+the original repo was removed from github. we keep it accessible at [zaydiscold/bird](https://github.com/zaydiscold/bird).
+
+this is a claude code skill that wraps it. paste an x.com link into any conversation and your agent reads it directly. no browser tab, no webfetch, no auth setup. the skill is bash-only by design (`allowed-tools: Bash`) — that's the whole point: agents read twitter without opening a browser.
+
+open tools should stay open.
 
 works in claude code, codex, cursor, openclaw, gemini. one install, all agents.
 
@@ -60,6 +65,8 @@ bird whoami  # should return your twitter handle
 ```
 
 bird uses safari or chrome cookies automatically. no api keys, no oauth dance.
+
+for full cli docs and archive: [zaydiscold/bird](https://github.com/zaydiscold/bird)
 
 **step 2:** install the skill
 
@@ -124,6 +131,24 @@ bird search "q" --plain      # no color, pipeable
 <p align="center">
   <img src="./assets/stars4.svg" alt="·" />
 </p>
+
+<br>
+<br>
+
+## changelog
+
+### v1.0.1
+- updated description: x.com/twitter.com URL trigger is now first (stronger auto-invoke)
+- added `bird v0.8.0` badge
+- credits @steipete as original bird author
+- auth line now shows `@ColdCooks` for clarity
+- bash-only design note (no browser, no webfetch — that's the point)
+- links to [zaydiscold/bird](https://github.com/zaydiscold/bird) for cli docs and archive
+
+### v1.0.0
+- initial release: read, search, thread, post, timeline
+- cross-agent: claude code, codex, cursor, openclaw, gemini
+- follows agentskills open standard
 
 <br>
 <br>
