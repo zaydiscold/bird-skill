@@ -9,7 +9,7 @@
 <p align="center">claude code skill for bird, the twitter/x cli. originally by <a href="https://x.com/steipete">@steipete</a>.</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/skill-v1.0.1-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
+  <img src="https://img.shields.io/badge/skill-v1.0.2-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
   <img src="https://img.shields.io/badge/bird-v0.8.0-D4AF37?style=flat-square&labelColor=1a1a2e" alt="bird version" />
   <img src="https://img.shields.io/badge/zayd.wtf-D4AF37?style=flat-square&labelColor=1a1a2e" alt="site" />
 </p>
@@ -55,7 +55,16 @@ works in claude code, codex, cursor, openclaw, gemini. one install, all agents.
 **step 1:** install the bird cli
 
 ```bash
-brew install steipete/tap/bird  # via homebrew tap
+brew install steipete/tap/bird  # via homebrew tap (try this first)
+```
+
+if the tap is unavailable, install directly from the mirror:
+
+```bash
+# from zaydiscold/bird — universal arm64/x86_64 binary
+curl -L https://github.com/zaydiscold/bird/releases/download/v0.8.0/bird -o bird
+chmod +x bird
+sudo mv bird /usr/local/bin/bird
 ```
 
 verify it's working:
@@ -137,6 +146,10 @@ bird search "q" --plain      # no color, pipeable
 
 ## changelog
 
+### v1.0.2
+- skill now detects missing bird binary on invocation and offers to install from [zaydiscold/bird](https://github.com/zaydiscold/bird/releases)
+- install section updated with curl fallback for when steipete's brew tap is unavailable
+
 ### v1.0.1
 - updated description: x.com/twitter.com URL trigger is now first (stronger auto-invoke)
 - added `bird v0.8.0` badge
@@ -189,6 +202,7 @@ bird search "q" --plain      # no color, pipeable
   ☑ core skill: read, search, thread, post, timeline<br>
   ☑ cross-agent: claude code, codex, cursor, openclaw, gemini<br>
   ☑ follows agentskills open standard<br>
+  ☑ auto-install bird if missing<br>
   ☐ skills.sh listing<br>
   ☐ firefox profile support in skill<br>
   ☐ multi-account switching

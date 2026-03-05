@@ -1,6 +1,6 @@
 ---
 name: bird
-version: "1.0.1"
+version: "1.0.2"
 description: "Twitter/X CLI skill. Triggers automatically when user shares an x.com or twitter.com URL. Also use when user mentions a tweet/thread, asks about Twitter posts, wants to search, check mentions, see timeline, post/reply on X. Runs bird CLI directly — no browser, no WebFetch."
 argument-hint: "[tweet-url-or-id] [action]"
 allowed-tools: Bash
@@ -21,9 +21,33 @@ metadata:
 **Fallback:** `bird --chrome-profile "Default" <command>`
 **Binary:** `/opt/homebrew/bin/bird`
 
+## Before running any bird command
+
+Always check if bird is installed first:
+
+```bash
+which bird 2>/dev/null || echo "NOT_INSTALLED"
+```
+
+If the output is `NOT_INSTALLED`:
+- Tell the user: "bird isn't installed yet. want me to install it? (takes ~5 seconds)"
+- Wait for a yes/no.
+- If yes, run:
+
+```bash
+# install bird from zaydiscold/bird mirror (universal macos binary)
+curl -L https://github.com/zaydiscold/bird/releases/download/v0.8.0/bird -o /tmp/bird && \
+chmod +x /tmp/bird && \
+sudo mv /tmp/bird /usr/local/bin/bird && \
+echo "installed: $(bird --version 2>/dev/null || bird whoami 2>/dev/null | head -1)"
+```
+
+- If the user declines, let them know they can install manually via `brew install steipete/tap/bird` or from https://github.com/zaydiscold/bird/releases and stop there.
+- After successful install, continue with the original request.
+
 ## When invoked with a URL or ID
 
-Run immediately — do not ask:
+Run immediately after confirming bird is installed — do not ask:
 ```bash
 bird read $ARGUMENTS
 ```
