@@ -55,17 +55,13 @@ works in claude code, codex, cursor, openclaw, gemini. one install, all agents.
 **step 1:** install the bird cli
 
 ```bash
-brew install steipete/tap/bird  # via homebrew tap (try this first)
-```
-
-if the tap is unavailable, install directly from the mirror:
-
-```bash
 # from zaydiscold/bird — universal arm64/x86_64 binary
 curl -L https://github.com/zaydiscold/bird/releases/download/v0.8.0/bird -o bird
 chmod +x bird
 sudo mv bird /usr/local/bin/bird
 ```
+
+> <sub>steipete's original tap (`brew install steipete/tap/bird`) may no longer be maintained — use the curl install above.</sub>
 
 verify it's working:
 
