@@ -1,10 +1,14 @@
 ---
 name: bird
-description: "Twitter/X CLI skill. Triggers automatically when user shares an x.com or twitter.com URL. Also use when user mentions a tweet/thread, asks about Twitter posts, wants to search, check mentions, see timeline, post/reply on X. Runs bird CLI directly — no browser, no WebFetch."
-argument-hint: "[tweet-url-or-id] [action]"
+description: "Twitter/X CLI skill. Triggers automatically when user shares an x.com or twitter.com URL. Also use when user mentions a tweet/thread, asks about Twitter posts, wants to search, check mentions, see timeline, post/reply on X. Runs bird CLI directly — no browser, no WebFetch. Do NOT use for content strategy or copywriting — defer to social-content or copywriting skills for that."
+license: MIT
 allowed-tools: Bash
+compatibility: "Requires macOS (Safari or Chrome cookies used for auth). Bird binary must be installed — the skill will offer to install it automatically on first use."
+argument-hint: "[tweet-url-or-id] [action]"
 user-invocable: true
 metadata:
+  author: zayd
+  version: 1.0.3
   clawdbot:
     emoji: "🐦"
     requires:
@@ -13,6 +17,8 @@ metadata:
 ---
 
 # Bird — Twitter/X CLI
+
+Read tweets, search, post, and browse timelines directly from the terminal using the `bird` CLI. Uses your browser's saved cookies for auth — no API keys, no OAuth.
 
 **Auth:** Browser cookies auto-detected (run `bird whoami` to check logged-in account)
 
@@ -150,10 +156,57 @@ After running `bird tweet` or `bird reply`:
 2. If output contains a URL → confirm to the user with the link
 3. If output shows an error → report the error; do not claim the tweet was posted
 
-## Error Handling
+## Examples
 
-- `unauthorized` / `401` → run `bird check`, report auth status, suggest re-opening Safari to refresh cookies
-- `rate limit` → wait 60s and retry once, then tell the user if still failing
-- `not found` → tweet was likely deleted or account suspended, tell the user
-- If Safari auth fails → try Chrome fallback: `bird --chrome-profile "Default" <command>`
-- Command hangs >30s → kill it and report the timeout
+### Example 1: User pastes a tweet URL
+
+User says: "https://x.com/elonmusk/status/1234567890"
+
+Actions:
+1. Run `bird read https://x.com/elonmusk/status/1234567890`
+2. Present the tweet content to the user
+
+Result: Tweet text, author, timestamp, and engagement stats displayed.
+
+### Example 2: User asks to search
+
+User says: "search twitter for AI agent frameworks"
+
+Actions:
+1. Run `bird search "AI agent frameworks" -n 20`
+2. Summarize or present the results
+
+Result: Top 20 matching tweets displayed.
+
+### Example 3: User wants to post
+
+User says: "tweet 'just shipped v2.0'"
+
+Actions:
+1. Confirm with the user: "Post this tweet: 'just shipped v2.0'?"
+2. On confirmation, run `bird tweet "just shipped v2.0"`
+3. Verify output for a confirmation URL
+
+Result: Tweet posted, confirmation link returned to user.
+
+## Troubleshooting
+
+### Error: `unauthorized` / `401`
+**Cause:** Browser cookies expired or not found.
+**Solution:** Run `bird check` to report auth status. Suggest the user re-open Safari (or Chrome) and visit twitter.com to refresh cookies, then retry.
+
+### Error: `rate limit`
+**Cause:** Too many requests to Twitter's API in a short window.
+**Solution:** Wait 60 seconds and retry once. If still failing, tell the user to wait a few minutes.
+
+### Error: `not found`
+**Cause:** Tweet was deleted or account was suspended.
+**Solution:** Inform the user the content is no longer available.
+
+### Error: Safari auth fails
+**Cause:** Safari cookie jar inaccessible or cookies cleared.
+**Solution:** Try Chrome fallback: `bird --chrome-profile "Default" <command>`. If both fail, the user needs to log into Twitter in a browser.
+
+### Error: Command hangs (>30 seconds)
+**Cause:** Network issue or Twitter API unresponsive.
+**Solution:** Kill the process and report the timeout. Suggest retrying.

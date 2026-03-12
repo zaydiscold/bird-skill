@@ -9,7 +9,7 @@
 <p align="center">claude code skill for bird, the twitter/x cli. originally by <a href="https://x.com/steipete">@steipete</a>.</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/skill-v1.0.2-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
+  <img src="https://img.shields.io/badge/skill-v1.0.3-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
   <img src="https://img.shields.io/badge/bird-v0.8.0-D4AF37?style=flat-square&labelColor=1a1a2e" alt="bird version" />
   <img src="https://img.shields.io/badge/zayd.wtf-D4AF37?style=flat-square&labelColor=1a1a2e" alt="site" />
 </p>
@@ -141,6 +141,14 @@ bird search "q" --plain      # no color, pipeable
 <br>
 
 ## changelog
+
+### v1.0.3
+- aligned skill with [anthropic's official skill guide](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf)
+- added `license`, `compatibility`, and standard `metadata` fields to frontmatter
+- added negative trigger in description to prevent over-triggering on content strategy tasks
+- added overview line at top of skill body
+- added concrete examples section (URL read, search, post) per guide's recommended template
+- renamed error handling → troubleshooting with structured error/cause/solution format
 
 ### v1.0.2
 - skill now detects missing bird binary on invocation and offers to install from [zaydiscold/bird](https://github.com/zaydiscold/bird/releases)
