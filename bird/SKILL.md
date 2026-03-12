@@ -8,7 +8,7 @@ argument-hint: "[tweet-url-or-id] [action]"
 user-invocable: true
 metadata:
   author: zayd
-  version: 1.0.3
+  version: 1.0.4
   clawdbot:
     emoji: "🐦"
     requires:
@@ -27,7 +27,7 @@ Read tweets, search, post, and browse timelines directly from the terminal using
 On the first bird command in a session, verify bird is installed:
 
 ```bash
-which bird 2>/dev/null || echo "NOT_INSTALLED"
+command -v bird 2>/dev/null || { [ -x "$HOME/.local/bin/bird" ] && echo "$HOME/.local/bin/bird" || echo "NOT_INSTALLED"; }
 ```
 
 If `NOT_INSTALLED`:
@@ -90,6 +90,16 @@ bird search "from:@handle keyword" -n 10
 bird search "term" --all            # all results, paginated
 ```
 
+Common search operators (combine freely):
+- `from:@handle` — tweets by a specific user
+- `to:@handle` — replies to a specific user
+- `"exact phrase"` — exact match
+- `filter:links` — only tweets containing links
+- `filter:media` — only tweets with images/video
+- `since:2025-01-01 until:2025-12-31` — date range
+- `min_retweets:100` / `min_faves:500` — engagement filters
+- `-keyword` — exclude a term
+
 ## Timeline & Discovery
 
 ```bash
@@ -142,12 +152,22 @@ bird check       # check credential availability
 
 - If user pastes an x.com/twitter.com URL → `bird read <url>` immediately
 - If user says "thread" or "conversation" → `bird thread <url>`
+- If user pastes multiple URLs → run `bird read` for each sequentially, present all results
 - For search/mentions/timeline → run the appropriate command and present results
 - When processing output for analysis (not displaying directly), prefer `--plain` to keep ANSI escape codes out of context
 - Do NOT open browser tabs or use WebFetch for Twitter content
 - Do NOT make up tweet content — only report what bird returns
 - Do NOT post, reply, follow, or unfollow without explicit user intent
 - This skill handles CLI execution (reading, posting, searching). For content strategy, copywriting, or social media planning, defer to other skills like social-content
+
+## Presenting Output
+
+- **Single tweet read**: Show the full tweet (author, text, media descriptions, engagement stats). Keep it verbatim — do not editorialize.
+- **Thread**: Present tweets in order with clear numbering (1/N, 2/N, ...). Summarize long threads (10+ tweets) with a brief overview first, then key excerpts.
+- **Search results**: Present as a concise list — author, snippet, date. For large result sets, highlight the most relevant 5-10 and offer to show more.
+- **Timeline / mentions**: Summarize themes and highlight notable items. Don't dump 20 raw tweets — curate.
+- **User profile (`bird about`)**: Present key facts cleanly — handle, name, bio, location, follower counts.
+- **When the user asks for analysis** (e.g., "what's the sentiment?" or "summarize the discourse"): Use `--plain` output and process it. Present your analysis, not the raw CLI output.
 
 ## Post Verification
 

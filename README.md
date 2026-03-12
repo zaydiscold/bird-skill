@@ -2,14 +2,12 @@
   <img src="./assets/banner.svg" alt="banner" />
 </p>
 
-<!-- add signature.svg to ./assets/ -->
-
 <h1 align="center">bird-skill</h1>
 
 <p align="center">claude code skill for bird, the twitter/x cli. originally by <a href="https://x.com/steipete">@steipete</a>.</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/skill-v1.0.3-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
+  <img src="https://img.shields.io/badge/skill-v1.0.4-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
   <img src="https://img.shields.io/badge/bird-v0.8.0-D4AF37?style=flat-square&labelColor=1a1a2e" alt="bird version" />
   <img src="https://img.shields.io/badge/zayd.wtf-D4AF37?style=flat-square&labelColor=1a1a2e" alt="site" />
 </p>
@@ -142,6 +140,13 @@ bird search "q" --plain      # no color, pipeable
 
 ## changelog
 
+### v1.0.4
+- smarter install detection (`command -v` + `~/.local/bin` fallback instead of `which`)
+- search operators quick reference (from:, to:, filter:, date ranges, engagement filters)
+- output presentation rules — agent knows when to show raw vs summarize vs curate
+- batch URL handling — multiple tweet links processed sequentially
+- cleaned up stale HTML comment in readme
+
 ### v1.0.3
 - aligned skill with [anthropic's official skill guide](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf)
 - added `license`, `compatibility`, and standard `metadata` fields to frontmatter
@@ -207,6 +212,7 @@ bird search "q" --plain      # no color, pipeable
   ☑ cross-agent: claude code, codex, cursor, openclaw, gemini<br>
   ☑ follows agentskills open standard<br>
   ☑ auto-install bird if missing<br>
+  ☑ aligned with anthropic's official skill guide<br>
   ☐ skills.sh listing<br>
   ☐ firefox profile support in skill<br>
   ☐ multi-account switching
