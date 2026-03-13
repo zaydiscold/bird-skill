@@ -7,7 +7,7 @@
 <p align="center">claude code skill for bird, the twitter/x cli. originally by <a href="https://x.com/steipete">@steipete</a>.</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/skill-v1.0.4-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
+  <img src="https://img.shields.io/badge/skill-v1.1.0-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
   <img src="https://img.shields.io/badge/bird-v0.8.0-D4AF37?style=flat-square&labelColor=1a1a2e" alt="bird version" />
   <img src="https://img.shields.io/badge/zayd.wtf-D4AF37?style=flat-square&labelColor=1a1a2e" alt="site" />
 </p>
@@ -138,7 +138,46 @@ bird search "q" --plain      # no color, pipeable
 <br>
 <br>
 
+## compatibility & limitations
+
+- Works on macOS with a browser profile (Safari or Chrome) that has an authenticated bird session.
+- Requires `bird` v0.8.0+ and a functioning cookie-backed auth state.
+- The skill currently gates write actions behind explicit confirmation (`tweet`, `reply`, `follow`, `unfollow`, `unbookmark`).
+- Inputs are validated before execution; only x.com / twitter.com content links, status IDs, and explicit action commands are supported.
+- List-style outputs default to `N=12` for compact responses, then offer `show more` for additional chunks.
+- This skill intentionally uses only `Bash` tooling and avoids browser automation/WebFetch for reads and writes.
+
+## release verification checklist
+
+Before publishing a new skill version, verify:
+
+- `metadata.version` in `bird/SKILL.md` and the README skill badge both match the release tag.
+- `SKILL_TESTS.md` core scenarios pass (trigger, functional, and failure-mode checks).
+- `SKILL.md` preflight/auth flow works for: missing binary, unauthorized, and private/protected responses.
+- `README.md` has matching changelog entry, installation steps, and compatibility notes.
+- `npx skills publish` checks (or equivalent distribution check) include this directory with updated files.
+
+Verification command examples:
+
+```bash
+# quick local consistency checks
+grep -n "metadata:\n  version" bird/SKILL.md
+grep -n "skill-v1.1.0" README.md
+python -m markdown
+# run your normal smoke tests using SKILL_TESTS.md
+```
+
+
 ## changelog
+
+### v1.1.0
+- added explicit preflight command sequencing and auth gating
+- added explicit write-command confirmation protocol for side-effect actions
+- added URL normalization and malformed input rejection
+- added default N=12 list output cap with show-more policy
+- expanded troubleshooting cases (private/protected, suspended/deleted, malformed input, network/DNS, timeout)
+- moved detailed operators/write/error guidance into `references/` docs and added `SKILL_TESTS.md` test matrix
+- added compatibility + release verification checklist and version-sync rule
 
 ### v1.0.4
 - smarter install detection (`command -v` + `~/.local/bin` fallback instead of `which`)

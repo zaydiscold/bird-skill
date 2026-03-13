@@ -1,14 +1,14 @@
 ---
 name: bird
-description: "Twitter/X CLI skill. Triggers automatically when user shares an x.com or twitter.com URL. Also use when user mentions a tweet/thread, asks about Twitter posts, wants to search, check mentions, see timeline, post/reply on X. Runs bird CLI directly — no browser, no WebFetch. Do NOT use for content strategy or copywriting — defer to social-content or copywriting skills for that."
+description: "Twitter/X CLI skill. Triggers automatically when user shares an x.com or twitter.com URL, asks for tweet/thread/read/search/mentions/timeline, or requests tweet actions. Uses bird CLI directly (no browser, no WebFetch). Do NOT use for content strategy or copywriting; defer those to social-content/copywriting.
 license: MIT
 allowed-tools: Bash
-compatibility: "Requires macOS (Safari or Chrome cookies used for auth). Bird binary must be installed — the skill will offer to install it automatically on first use."
-argument-hint: "[tweet-url-or-id] [action]"
+compatibility: "Requires macOS (Safari or Chrome cookies for auth) and a bird binary on PATH or in ~/.local/bin."
+argument-hint: "[tweet-url-or-id] [query] [action]"
 user-invocable: true
 metadata:
   author: zayd
-  version: 1.0.4
+  version: 1.1.0
   clawdbot:
     emoji: "🐦"
     requires:
@@ -18,215 +18,135 @@ metadata:
 
 # Bird — Twitter/X CLI
 
-Read tweets, search, post, and browse timelines directly from the terminal using the `bird` CLI. Uses your browser's saved cookies for auth — no API keys, no OAuth.
+Read tweets, search, and browse timelines directly via `bird` CLI using Bash only.
 
-**Auth:** Browser cookies auto-detected (run `bird whoami` to check logged-in account)
+## Core behavior
 
-## First use
+- Use `bird` directly. Do not use browser tools or WebFetch.
+- Keep behavior deterministic: choose one command path, run it, report output.
+- Prefer concise summaries unless the user explicitly asks for raw output.
+- Do not fabricate any tweet text. Only report what `bird` returns.
+- If the request has no actionable argument, offer the supported actions and ask for one.
+- Treat any write action (`tweet`, `reply`, `follow`, `unfollow`, `unbookmark`) as requiring explicit user confirmation.
 
-On the first bird command in a session, verify bird is installed:
+## Preflight and auth gating
 
-```bash
-command -v bird 2>/dev/null || { [ -x "$HOME/.local/bin/bird" ] && echo "$HOME/.local/bin/bird" || echo "NOT_INSTALLED"; }
-```
+Run this sequence before the first command in a user turn:
 
-If `NOT_INSTALLED`:
-- Tell the user: "bird isn't installed yet. want me to install it? (takes ~5 seconds)"
-- Wait for a yes/no.
-- If yes, run:
-
-```bash
-curl -L https://github.com/zaydiscold/bird/releases/download/v0.8.0/bird -o /tmp/bird && \
-chmod +x /tmp/bird && \
-mkdir -p ~/.local/bin && \
-mv /tmp/bird ~/.local/bin/bird && \
-export PATH="$HOME/.local/bin:$PATH" && \
-echo "installed: $(bird --version 2>/dev/null || bird whoami 2>/dev/null | head -1)"
-```
-
-If `~/.local/bin` is not in PATH, fall back to `sudo mv /tmp/bird /usr/local/bin/bird`.
-- If the user declines, let them know they can install manually from https://github.com/zaydiscold/bird/releases (steipete's original brew tap `brew install steipete/tap/bird` may no longer be maintained) and stop there.
-- After successful install, continue with the original request.
-- Skip this check for subsequent commands in the same session.
-
-## When invoked without arguments
-
-Show a brief summary: "bird reads Twitter/X from your terminal. Try: paste a tweet URL, or say 'search [query]', 'my mentions', 'timeline'."
-
-## When invoked with a URL or ID
-
-Run immediately — do not ask:
-```bash
-bird read $ARGUMENTS
-```
-
-Thread detection — use `bird thread` instead of `bird read` when:
-- User says "thread" or "conversation"
-- URL path contains `/status/` and user context implies a multi-tweet chain
-- `bird read` output shows "Replying to @..." at the top (suggest re-fetching with `bird thread` for full context)
-
-Default to `bird read` for single URLs.
+1. Resolve/install bird executable:
 
 ```bash
-bird thread $ARGUMENTS              # full conversation
-bird thread $ARGUMENTS --all        # all pages of a long thread
+if command -v bird >/dev/null 2>&1; then
+  :
+elif [ -x "$HOME/.local/bin/bird" ]; then
+  export PATH="$HOME/.local/bin:$PATH"
+else
+  : "need-install"
+fi
 ```
 
-## Read
+2. Verify CLI availability:
 
 ```bash
-bird read <url-or-id>               # single tweet
-bird thread <url-or-id>             # full conversation
-bird thread <url-or-id> --all       # all pages
-bird replies <url-or-id>            # replies to a tweet
-bird user-tweets @handle -n 20      # user's profile timeline
+bird --version
+bird check
 ```
 
-## Search
+3. For auth-sensitive actions run:
 
 ```bash
-bird search "query" -n 20
-bird search "from:@handle keyword" -n 10
-bird search "term" --all            # all results, paginated
+bird whoami
 ```
 
-Common search operators (combine freely):
-- `from:@handle` — tweets by a specific user
-- `to:@handle` — replies to a specific user
-- `"exact phrase"` — exact match
-- `filter:links` — only tweets containing links
-- `filter:media` — only tweets with images/video
-- `since:2025-01-01 until:2025-12-31` — date range
-- `min_retweets:100` / `min_faves:500` — engagement filters
-- `-keyword` — exclude a term
+Auth-sensitive actions:
+- `mentions`, `home`, `bookmarks`, `likes`, `news`, `user-tweets`, `follow`, `unfollow`, `tweet`, `reply`, `unbookmark`
 
-## Timeline & Discovery
+If `bird` is missing:
+- tell the user `bird isn't installed`, offer to install it, and wait for yes/no.
+- If yes, install with:
 
 ```bash
-bird home -n 20                     # For You feed
-bird home --following -n 20         # Following (chronological)
-bird mentions -n 20                 # your mentions
-bird mentions -u @handle -n 20      # another user's mentions
-bird bookmarks -n 20
-bird likes -n 20
-bird news --ai-only                 # trending / AI-curated
-bird news --with-tweets --tweets-per-item 3
-bird lists                          # your lists
-bird list-timeline <list-id-or-url>
-bird about @handle                  # account origin & location
-bird following -n 50
-bird followers -n 50
+curl -L https://github.com/zaydiscold/bird/releases/download/v0.8.0/bird -o /tmp/bird \
+  && chmod +x /tmp/bird \
+  && mkdir -p "$HOME/.local/bin" \
+  && mv /tmp/bird "$HOME/.local/bin/bird" \
+  && export PATH="$HOME/.local/bin:$PATH"
 ```
 
-## Post & Engage
+If PATH still does not include `~/.local/bin`, advise manual install from
+`https://github.com/zaydiscold/bird` and stop.
 
-> Confirm before posting unless the user provided explicit text.
+If auth checks fail:
+- report the exact failure
+- ask the user to refresh browser login cookies and retry.
 
-```bash
-bird tweet "text"
-bird reply <url-or-id> "reply text"
-bird follow @handle
-bird unfollow @handle
-bird unbookmark <url-or-id>
+## URL normalization and input validation
 
-# Media (up to 4 images or 1 video)
-bird tweet "caption" --media /path/to/file.jpg --alt "description"
-```
+Normalize URLs before dispatch:
 
-## Output Formats
+1. Accept only these hosts:
+   - `x.com`
+   - `twitter.com`
+   - `mobile.twitter.com`
 
-```bash
-bird read <id> --json               # structured JSON
-bird read <id> --json-full          # JSON + raw API response
-bird search "query" --plain         # no color/emoji (for piping)
-```
+2. Convert host to `https://x.com`.
+3. Keep tweet/status path only; strip tracking params such as
+   `utm_*`, `s`, `ref`, `ref_src`, `f`, `t`, `fbclid`.
+4. Reject non-Twitter URLs early with: 
+   `I can only process x.com or twitter.com links. Share a tweet URL, status ID, or a search/query request.`
 
-## Auth Check
+Handle multiple URLs sequentially when present.
 
-```bash
-bird whoami      # confirm logged-in account
-bird check       # check credential availability
-```
+## Request orchestration
 
-## Behavior Rules
+### Read vs thread vs search
 
-- If user pastes an x.com/twitter.com URL → `bird read <url>` immediately
-- If user says "thread" or "conversation" → `bird thread <url>`
-- If user pastes multiple URLs → run `bird read` for each sequentially, present all results
-- For search/mentions/timeline → run the appropriate command and present results
-- When processing output for analysis (not displaying directly), prefer `--plain` to keep ANSI escape codes out of context
-- Do NOT open browser tabs or use WebFetch for Twitter content
-- Do NOT make up tweet content — only report what bird returns
-- Do NOT post, reply, follow, or unfollow without explicit user intent
-- This skill handles CLI execution (reading, posting, searching). For content strategy, copywriting, or social media planning, defer to other skills like social-content
+- If the request contains tweet text URLs/IDs:
+  - use `bird read <id-or-url>` by default.
+  - if thread wording is present (`thread`, `conversation`, `replies chain`, etc.), use `bird thread <id-or-url>`.
+- If multiple URLs are provided, read each in order with `bird read` (or `bird thread` when explicitly threaded).
+- If user asks for timeline/discovery:
+  - `mentions`, `home`, `home --following`, `bookmarks`, `likes`, `news`, `user-tweets`, `about`, `following`, `followers`.
+- For search:
+  - `bird search "query" -n <N>`.
 
-## Presenting Output
+## Output size and show-more policy
 
-- **Single tweet read**: Show the full tweet (author, text, media descriptions, engagement stats). Keep it verbatim — do not editorialize.
-- **Thread**: Present tweets in order with clear numbering (1/N, 2/N, ...). Summarize long threads (10+ tweets) with a brief overview first, then key excerpts.
-- **Search results**: Present as a concise list — author, snippet, date. For large result sets, highlight the most relevant 5-10 and offer to show more.
-- **Timeline / mentions**: Summarize themes and highlight notable items. Don't dump 20 raw tweets — curate.
-- **User profile (`bird about`)**: Present key facts cleanly — handle, name, bio, location, follower counts.
-- **When the user asks for analysis** (e.g., "what's the sentiment?" or "summarize the discourse"): Use `--plain` output and process it. Present your analysis, not the raw CLI output.
+- Use default page size `N=12` for list-style results (`search`, `home`, `mentions`, threads).
+- For results longer than N:
+  1. show top N in concise list/table form,
+  2. offer: `show more` to fetch next chunk.
+- For long threads, summarize first with key context and then list remaining items.
 
-## Post Verification
+Use JSON/plain output rules:
+- Prefer `--plain` for downstream analysis.
+- Show human-readable output when user asked to read tweets directly.
 
-After running `bird tweet` or `bird reply`:
-1. Check the command output for a tweet URL or ID confirming success
-2. If output contains a URL → confirm to the user with the link
-3. If output shows an error → report the error; do not claim the tweet was posted
+See references for detailed command mapping:
+- `references/search-operators.md`
+- `references/write-actions.md`
+- `references/troubleshooting.md`
 
-## Examples
+## Deterministic side-effect confirmation
 
-### Example 1: User pastes a tweet URL
+For `tweet`, `reply`, `follow`, `unfollow`, and `unbookmark`:
 
-User says: "https://x.com/elonmusk/status/1234567890"
+1. Echo exact intent and the exact command it will run.
+2. Ask confirmation once: `Proceed with <command>?`
+3. Execute only on explicit confirmation (`yes`/`y`).
+4. Abort on anything else, and do not run a fallback.
 
-Actions:
-1. Run `bird read https://x.com/elonmusk/status/1234567890`
-2. Present the tweet content to the user
+## Error taxonomy (high-level)
 
-Result: Tweet text, author, timestamp, and engagement stats displayed.
+- `unauthorized` / `401`: auth unavailable; run `bird check` and `bird whoami`, then refresh browser cookies and retry.
+- `rate limit`: request limit reached; pause and retry after a short delay.
+- `not found`: deleted tweet/account, stale thread, or malformed ID; ask for corrected input.
+- `private` / `protected`: account or content visibility restricted; explain limitation and request required access.
+- `suspended` / `deleted user`: target user no longer accessible; ask for an alternate target.
+- `malformed URL/ID`: input is invalid; reject early and prompt for supported examples.
+- `Safari vs Chrome auth source mismatch`: mismatch in cookie source; re-auth using the active browser and rerun.
+- `network` / `DNS failure`: connectivity issue; suggest checking network/DNS and retry.
+- `timeout` / hanging command: transient service issue; stop and ask user to rerun after waiting.
 
-### Example 2: User asks to search
-
-User says: "search twitter for AI agent frameworks"
-
-Actions:
-1. Run `bird search "AI agent frameworks" -n 20`
-2. Summarize or present the results
-
-Result: Top 20 matching tweets displayed.
-
-### Example 3: User wants to post
-
-User says: "tweet 'just shipped v2.0'"
-
-Actions:
-1. Confirm with the user: "Post this tweet: 'just shipped v2.0'?"
-2. On confirmation, run `bird tweet "just shipped v2.0"`
-3. Verify output for a confirmation URL
-
-Result: Tweet posted, confirmation link returned to user.
-
-## Troubleshooting
-
-### Error: `unauthorized` / `401`
-**Cause:** Browser cookies expired or not found.
-**Solution:** Run `bird check` to report auth status. Suggest the user re-open Safari (or Chrome) and visit twitter.com to refresh cookies, then retry.
-
-### Error: `rate limit`
-**Cause:** Too many requests to Twitter's API in a short window.
-**Solution:** Wait 60 seconds and retry once. If still failing, tell the user to wait a few minutes.
-
-### Error: `not found`
-**Cause:** Tweet was deleted or account was suspended.
-**Solution:** Inform the user the content is no longer available.
-
-### Error: Safari auth fails
-**Cause:** Safari cookie jar inaccessible or cookies cleared.
-**Solution:** Try Chrome fallback: `bird --chrome-profile "Default" <command>`. If both fail, the user needs to log into Twitter in a browser.
-
-### Error: Command hangs (>30 seconds)
-**Cause:** Network issue or Twitter API unresponsive.
-**Solution:** Kill the process and report the timeout. Suggest retrying.
+For detailed remediation by case, use: 
+- `references/troubleshooting.md`
