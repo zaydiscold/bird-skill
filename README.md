@@ -7,7 +7,7 @@
 <p align="center">claude code skill for bird, the twitter/x cli. originally by <a href="https://x.com/steipete">@steipete</a>.</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/skill-v1.1.0-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
+  <img src="https://img.shields.io/badge/skill-v1.1.1-B4A7D6?style=flat-square&labelColor=1a1a2e" alt="skill version" />
   <img src="https://img.shields.io/badge/bird-v0.8.0-D4AF37?style=flat-square&labelColor=1a1a2e" alt="bird version" />
   <img src="https://img.shields.io/badge/zayd.wtf-D4AF37?style=flat-square&labelColor=1a1a2e" alt="site" />
 </p>
@@ -67,7 +67,7 @@ verify it's working:
 bird whoami  # should return your twitter handle
 ```
 
-bird uses safari or chrome cookies automatically. no api keys, no oauth dance.
+bird uses safari or chrome cookies automatically. safari should stay the default path. if safari works in your normal terminal but fails inside an agent shell, the skill now tells the agent to probe chrome profiles and persist a fallback config instead of incorrectly telling you to relogin.
 
 for full cli docs and archive: [zaydiscold/bird](https://github.com/zaydiscold/bird)
 
@@ -141,6 +141,7 @@ bird search "q" --plain      # no color, pipeable
 ## compatibility & limitations
 
 - Works on macOS with a browser profile (Safari or Chrome) that has an authenticated bird session.
+- Prefers Safari when available. If Safari cookie access fails only inside an agent shell, the skill now treats Chrome as a fallback recovery path rather than as the primary source.
 - Requires `bird` v0.8.0+ and a functioning cookie-backed auth state.
 - The skill currently gates write actions behind explicit confirmation (`tweet`, `reply`, `follow`, `unfollow`, `unbookmark`).
 - Inputs are validated before execution; only x.com / twitter.com content links, status IDs, and explicit action commands are supported.
@@ -169,6 +170,12 @@ python -m markdown
 
 
 ## changelog
+
+### v1.1.1
+- made Safari the explicit first/default auth path in the skill docs
+- added agent-shell recovery guidance for Safari cookie permission failures
+- documented Chrome profile probing and `~/.config/bird/config.json5` fallback persistence
+- synced README version badge with skill metadata
 
 ### v1.1.0
 - added explicit preflight command sequencing and auth gating

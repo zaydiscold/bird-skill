@@ -1,14 +1,14 @@
 ---
 name: bird
-description: "Twitter/X CLI skill. Triggers automatically when user shares an x.com or twitter.com URL, asks for tweet/thread/read/search/mentions/timeline, or requests tweet actions. Uses bird CLI directly (no browser, no WebFetch). Do NOT use for content strategy or copywriting; defer those to social-content/copywriting.
+description: "Use when the user shares an x.com or twitter.com URL, asks to read/search tweets, check mentions or timelines, or perform tweet actions with the bird CLI."
 license: MIT
 allowed-tools: Bash
-compatibility: "Requires macOS (Safari or Chrome cookies for auth) and a bird binary on PATH or in ~/.local/bin."
+compatibility: "Requires macOS and a bird binary on PATH or in ~/.local/bin. Prefer Safari cookies first; use Chrome as fallback when agent shells cannot read Safari cookies."
 argument-hint: "[tweet-url-or-id] [query] [action]"
 user-invocable: true
 metadata:
   author: zayd
-  version: 1.1.0
+  version: 1.1.1
   clawdbot:
     emoji: "🐦"
     requires:
@@ -52,11 +52,45 @@ bird --version
 bird check
 ```
 
-3. For auth-sensitive actions run:
+3. Prefer Safari first for auth-sensitive actions:
 
 ```bash
 bird whoami
 ```
+
+4. If Safari fails with missing cookies, Safari cookie permission errors, or "No Twitter cookies found", do not stop at "refresh browser login cookies". On macOS, explicitly probe installed Chrome profiles and persist a working fallback:
+
+```bash
+bird check --plain || bird whoami --plain || true
+
+for profile in "Default" "Profile 1" "Profile 2" "Profile 3"; do
+  bird --chrome-profile "$profile" check --plain >/tmp/bird-check.txt 2>&1 || true
+  if rg -q 'Ready to tweet|auth_token: .*|ct0: .*|source: Chrome profile' /tmp/bird-check.txt; then
+    mkdir -p "$HOME/.config/bird"
+    cat > "$HOME/.config/bird/config.json5" <<EOF
+{
+  chromeProfile: "$profile",
+  cookieSource: ["chrome"],
+}
+EOF
+    bird check --plain
+    bird whoami --plain
+    break
+  fi
+done
+```
+
+If Chrome profiles fail, also check whether the user has a custom browser profile path and retry with:
+
+```bash
+bird --chrome-profile-dir "<path-to-cookies-or-profile>" check --plain
+```
+
+The purpose of the fallback is:
+- Safari is the preferred/default auth source when it works.
+- Safari can fail in coding-agent shells due macOS cookie/keychain permissions even if it works in the user's normal interactive terminal.
+- The user may still have a valid session in Chrome/Chromium even when default autodetection fails.
+- Persisting `~/.config/bird/config.json5` makes the fix apply across Codex, Claude Code, and other agent shells on the same machine.
 
 Auth-sensitive actions:
 - `mentions`, `home`, `bookmarks`, `likes`, `news`, `user-tweets`, `follow`, `unfollow`, `tweet`, `reply`, `unbookmark`
@@ -78,7 +112,10 @@ If PATH still does not include `~/.local/bin`, advise manual install from
 
 If auth checks fail:
 - report the exact failure
-- ask the user to refresh browser login cookies and retry.
+- keep Safari as the first/default path
+- try explicit Chrome profile fallback before asking the user to relogin
+- if a fallback profile works, persist it to `~/.config/bird/config.json5`
+- only ask the user to refresh browser login cookies if no installed browser profile works.
 
 ## URL normalization and input validation
 
@@ -138,13 +175,14 @@ For `tweet`, `reply`, `follow`, `unfollow`, and `unbookmark`:
 
 ## Error taxonomy (high-level)
 
-- `unauthorized` / `401`: auth unavailable; run `bird check` and `bird whoami`, then refresh browser cookies and retry.
+- `unauthorized` / `401`: auth unavailable; run `bird check` and `bird whoami`, prefer Safari first, then probe Chrome fallback if Safari fails in the agent shell.
 - `rate limit`: request limit reached; pause and retry after a short delay.
 - `not found`: deleted tweet/account, stale thread, or malformed ID; ask for corrected input.
 - `private` / `protected`: account or content visibility restricted; explain limitation and request required access.
 - `suspended` / `deleted user`: target user no longer accessible; ask for an alternate target.
 - `malformed URL/ID`: input is invalid; reject early and prompt for supported examples.
-- `Safari vs Chrome auth source mismatch`: mismatch in cookie source; re-auth using the active browser and rerun.
+- `Safari vs Chrome auth source mismatch`: mismatch in cookie source; keep Safari as default when available, otherwise persist a working Chrome fallback.
+- `Safari cookie permission failure`: Safari works in the user's interactive shell but fails in the agent shell due macOS cookie/keychain access; probe Chrome profiles, then persist a working `~/.config/bird/config.json5` fallback.
 - `network` / `DNS failure`: connectivity issue; suggest checking network/DNS and retry.
 - `timeout` / hanging command: transient service issue; stop and ask user to rerun after waiting.
 
