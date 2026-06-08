@@ -128,6 +128,25 @@ bird search "q" --plain      # no color, pipeable
 
 <sub>all bird commands: read, thread, replies, search, mentions, home, bookmarks, likes, user-tweets, news, lists, list-timeline, following, followers, about, tweet, reply, follow, unfollow, unbookmark, whoami, check</sub>
 
+### optional hermes agent backend
+
+Hermes Agent users can keep this skill for cookie-backed `bird` workflows and
+install [Hermes Tweet](https://github.com/Xquik-dev/hermes-tweet) as a separate
+Hermes plugin when they want API-key-backed X/Twitter reads from the Hermes tool
+runtime.
+
+```bash
+hermes plugins install Xquik-dev/hermes-tweet --enable
+export XQUIK_API_KEY="xq_..."
+export HERMES_TWEET_ENABLE_ACTIONS="false"
+```
+
+Use `tweet_explore` first to inspect available operations. Use `tweet_read` for
+searches, profiles, tweet/thread reads, bookmarks, trends, monitors, webhooks,
+and media lookups. Keep `HERMES_TWEET_ENABLE_ACTIONS=false` for read-only
+sessions, and set it to `true` only when a Hermes session should post, reply,
+DM, follow, manage monitors, or mutate media.
+
 <br>
 <br>
 
