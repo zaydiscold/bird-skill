@@ -113,6 +113,25 @@ fi
 **Validation**: User understands the content
 **Rollback**: Offer raw output if summary is unclear
 
+## Optional Hermes Agent backend
+
+When the user is working inside Hermes Agent and wants an API-key-backed
+X/Twitter tool runtime instead of browser cookies, install Hermes Tweet as a
+separate Hermes plugin:
+
+```bash
+hermes plugins install Xquik-dev/hermes-tweet --enable
+export XQUIK_API_KEY="xq_..."
+export HERMES_TWEET_ENABLE_ACTIONS="false"
+```
+
+Use Hermes Tweet's `tweet_explore` command first to inspect available
+operations. Use `tweet_read` for searches, profiles, tweet/thread reads,
+bookmarks, trends, monitors, webhooks, and media lookups. Keep
+`HERMES_TWEET_ENABLE_ACTIONS=false` for read-only sessions, and set it to
+`true` only when the user explicitly wants posting, replies, DMs, follows,
+monitor changes, or media mutations.
+
 ## URL Normalization
 
 CRITICAL - Validate URLs before processing:
